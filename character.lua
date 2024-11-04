@@ -3,9 +3,9 @@ Character = {}
 function Character:load()
     self.width = 24
     self.height = 32
-    self.scale = 4
+    self.scale = 2
     self.animation = self:newAnimation(love.graphics.newImage("assets/rpg_sprite_walk.png"), self.width, self.height, 1)
-    self.speed = 500
+    self.speed = 250
     self.x = love.graphics.getWidth() / 2 - (self.width*self.scale) / 2
     self.y = love.graphics.getHeight() / 2 - (self.height*self.scale) / 2
     self.profile = "front"
