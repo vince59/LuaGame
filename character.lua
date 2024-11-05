@@ -1,24 +1,30 @@
+local Animation = require("animation")
+
 Character = {}
 
 function Character:load()
     self.width = 24
     self.height = 32
     self.scale = 2
-    self.animation = self:newAnimation(love.graphics.newImage("assets/rpg_sprite_walk.png"), self.width, self.height, 1)
     self.speed = 250
     self.x = love.graphics.getWidth() / 2 - (self.width*self.scale) / 2
     self.y = love.graphics.getHeight() / 2 - (self.height*self.scale) / 2
     self.profile = "front"
     self.static = true
+    self.frontWalk=Animation:new(Assets.Walker,{2,3,4,5,6,7,8},1)
+    self.backWalk=Animation:new(Assets.Walker,{10,11,12,13,14,15,16},1)
+    self.leftWalk=Animation:new(Assets.Walker,{18,19,20,21,22,23,24},1)
+    self.rightWalk=Animation:new(Assets.Walker,{26,27,28,29,30,31,32},1)
+    self.frontStop=Animation:new(Assets.Walker,{1},1)
+    self.backStop=Animation:new(Assets.Walker,{9},1)
+    self.leftStop=Animation:new(Assets.Walker,{17},1)
+    self.rightStop=Animation:new(Assets.Walker,{25},1)
 end
 
 function Character:update(dt)
     self:move(dt)
     self:checkBoundaries()
-    self.animation.currentTime = self.animation.currentTime + dt
-    if self.animation.currentTime >= self.animation.duration then
-        self.animation.currentTime = self.animation.currentTime - self.animation.duration
-    end
+    self:updateAnimation(dt)
 end
 
 function Character:move(dt)
@@ -56,45 +62,40 @@ function Character:checkBoundaries()
     end
 end
 
-function Character:draw()
-    local spriteNum
-    if self.static then
+function Character:updateAnimation(dt)
+    if self.static==false then
         if self.profile == "front" then
-            spriteNum = 1
+            self.frontWalk:update(dt)
         elseif self.profile == "back" then
-            spriteNum = 9
+            self.backWalk:update(dt)
         elseif self.profile == "left" then
-            spriteNum = 17
+            self.leftWalk:update(dt)
         elseif self.profile == "right" then
-            spriteNum = 25
-        end
-        self.animation.currentTime = 0
-    else
-        spriteNum = math.floor(self.animation.currentTime / self.animation.duration * 8) + 1
-        if self.profile == "back" then
-            spriteNum = spriteNum + 8
-        elseif self.profile == "left" then
-            spriteNum = spriteNum + 16
-        elseif self.profile == "right" then
-            spriteNum = spriteNum + 24
+            self.rightWalk:update(dt)
         end
     end
-    love.graphics.draw(self.animation.spriteSheet, self.animation.quads[spriteNum], self.x, self.y, 0, self.scale)
 end
 
-function Character:newAnimation(image, width, height, duration)
-    local animation = {}
-    animation.spriteSheet = image;
-    animation.quads = {};
-
-    for y = 0, image:getHeight() - height, height do
-        for x = 0, image:getWidth() - width, width do
-            table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, image:getDimensions()))
+function Character:draw()
+    if self.static then
+        if self.profile == "front" then
+            self.frontStop:drawNextSprite(self.x, self.y, self.scale)
+        elseif self.profile == "back" then
+            self.backStop:drawNextSprite(self.x, self.y, self.scale)
+        elseif self.profile == "left" then
+            self.leftStop:drawNextSprite(self.x, self.y, self.scale)
+        elseif self.profile == "right" then
+            self.rightStop:drawNextSprite(self.x, self.y, self.scale)
+        end
+    else
+        if self.profile == "front" then
+            self.frontWalk:drawNextSprite(self.x, self.y, self.scale)
+        elseif self.profile == "back" then
+            self.backWalk:drawNextSprite(self.x, self.y, self.scale)
+        elseif self.profile == "left" then
+            self.leftWalk:drawNextSprite(self.x, self.y, self.scale)
+        elseif self.profile == "right" then
+            self.rightWalk:drawNextSprite(self.x, self.y, self.scale)
         end
     end
-
-    animation.duration = duration or 1
-    animation.currentTime = 0
-
-    return animation
 end

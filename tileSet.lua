@@ -2,23 +2,25 @@ local TileSet = {}
 
 -- Constructor
 
-function TileSet:new(imagePath, width, height)
+function TileSet:new()
     local instance={}
     setmetatable(instance, {__index = TileSet})
-    instance.imagePath=imagePath
-    instance.width=width
-    instance.height=height
-
+    instance.imagePath=""
+    instance.width=0
+    instance.height=0
     return instance
 end
 
-function TileSet:drawSprite(tile,x,y,scale)
-    local nbLine=math.floor(tile.yPos/self.height)
-    local nbCol=math.floor(tile.xPos/self.width)
-    if nbCol==0 then
-        nbCol=1
+function TileSet:getSpriteNum(x,y)
+    local nbLine=math.floor(y/self.height)
+    local nbCol=math.floor(x/self.width)
+    if math.fmod(x/self.width,1)>0 then
+        nbCol=nbCol+1
     end
-    local spriteNumber= nbLine*self.nbCol+nbCol
+    return nbLine*self.nbCol+nbCol
+end
+
+function TileSet:drawSprite(spriteNumber,x,y,scale)
     love.graphics.draw(self.spriteSheet, self.quads[spriteNumber], x,y, 0, scale)
 end
 

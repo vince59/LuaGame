@@ -1,8 +1,11 @@
 require("character")
-require("parameters")
+require("assets")
+require("landscape")
+local json = require "json"
 
 function love.load()
-    Parameters:load()
+    Assets:load()
+    Landscape:load()
     Character:load()
 end
 
@@ -11,6 +14,6 @@ function love.update(dt)
 end
 
 function love.draw()
-    Parameters.OutdoorTiles:drawSprite(Parameters.Tile1,10,30,10)
-    Character:draw() 
+    Landscape:draw()
+    Character:draw()
 end
